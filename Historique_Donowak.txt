@@ -72,3 +72,13 @@
     - React : de la version 19.0.0 (Canary) à la version 18.2.0 (stable).
     - ESLint : de la version 9 (expérimentale) à la version 8.57.0 (stable).
   - Suppression du flag `--turbopack` qui n'est pas compatible avec les versions stables. 
+
+### Sécurisation de l'Accès Administrateur (28/03/2025)
+
+- **Restriction des inscriptions et sécurisation du dashboard :**
+  - Modification de la page de login pour désactiver l'inscription publique (`showLinks={false}` et `view="sign_in"`).
+  - Transformation du dashboard en composant client avec vérification d'authentification en temps réel.
+  - Implémentation d'une liste d'emails autorisés pour restreindre l'accès au dashboard à l'administrateur uniquement.
+  - Ajout d'une déconnexion automatique pour les utilisateurs non autorisés.
+  - Activation de la redirection automatique des utilisateurs déjà connectés de `/login` vers `/dashboard`.
+  - Amélioration de l'expérience utilisateur avec des messages de chargement et des boutons de déconnexion. 

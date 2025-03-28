@@ -17,12 +17,12 @@ export async function middleware(request: NextRequest) {
     return Response.redirect(url)
   }
 
-  // Si l'utilisateur est connecté et essaie d'accéder à /login, rediriger vers /dashboard ? (Optionnel)
-  // if (user && request.nextUrl.pathname.startsWith('/login')) {
-  //   const url = request.nextUrl.clone()
-  //   url.pathname = '/dashboard'
-  //   return Response.redirect(url)
-  // }
+  // Si l'utilisateur est connecté et essaie d'accéder à /login, rediriger vers /dashboard
+  if (user && request.nextUrl.pathname.startsWith('/login')) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/dashboard'
+    return Response.redirect(url)
+  }
 
   // Retourne la réponse (peut contenir des cookies de session mis à jour)
   return response
@@ -40,6 +40,6 @@ export const config = {
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).)*',
     // Ajout explicite pour s'assurer que les routes protégées sont incluses
     '/dashboard/:path*',
-    '/login', // Inclure /login pour la redirection optionnelle si déjà connecté
+    '/login', // Inclure /login pour la redirection si déjà connecté
   ],
 } 
