@@ -1,0 +1,37 @@
+## Historique du Projet Donowak
+
+### Initialisation (Date et Heure)
+
+- Création du projet Next.js 'donowak' avec TypeScript, Tailwind CSS, ESLint, App Router, dossier `src` et alias `@/*`.
+- Nettoyage initial du projet : suppression des styles par défaut dans `src/app/globals.css`.
+- Création du fichier `Historique_Donowak.txt` pour le suivi du projet. 
+
+### Structure Initiale (Date et Heure)
+
+- Mise en place de la structure des pages : Accueil, Prestations, Réalisations, À Propos, Blog, Contact, Dashboard.
+- Création des fichiers `page.tsx` de base pour chaque section avec placeholders.
+- Redirection de la page racine `/` vers `/accueil`.
+- Ajout d'une navigation principale (header) et d'un pied de page (footer) dans `layout.tsx`.
+- Configuration des métadonnées SEO de base (title, description) dans `layout.tsx`.
+- Correction de l'intégration de la police (utilisation de Inter via next/font/google).
+- Installation du client Supabase (`@supabase/supabase-js`).
+- Création du fichier de configuration Supabase (`src/lib/supabaseClient.ts`) utilisant des variables d'environnement (`.env.local`).
+- Ajout d'un formulaire de contact basique (sans logique de soumission backend pour l'instant). 
+
+### Configuration Supabase (Date et Heure)
+
+- Connexion au compte Supabase via CLI (`supabase login`).
+- Création manuelle du projet Supabase (`moaibrkqszhnixupnjbp`) sur app.supabase.com.
+- Liaison du projet local au projet distant via CLI (`supabase link --project-ref moaibrkqszhnixupnjbp`).
+- Création de la migration SQL (`supabase/migrations/..._create_initial_tables.sql`) pour les tables `pages` et `blog_posts` (incluant RLS et triggers `updated_at`).
+- Application de la migration à la base de données distante (`supabase db push`).
+- Création manuelle des buckets de stockage publics `images` et `blog` via l'interface Supabase.
+- Choix de l'hébergement externe (ex: YouTube/Vimeo) pour les vidéos.
+- Création du fichier `.env.local` avec les variables `NEXT_PUBLIC_SUPABASE_URL` et `NEXT_PUBLIC_SUPABASE_ANON_KEY`. 
+
+### Configuration GitHub (Date et Heure)
+
+- Authentification via GitHub CLI (`gh auth login`).
+- Création du dépôt distant public `Haeev/donowak` via CLI (`gh repo create`).
+- Liaison du projet local au dépôt distant (`git remote add origin`).
+- Envoi initial du code local vers le dépôt distant (`git push -u origin main`). 
