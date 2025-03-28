@@ -179,50 +179,6 @@ export default function DashboardPage() {
     return true
   }
 
-  const createNewPage = async () => {
-    // Demander le slug pour la nouvelle page
-    const slug = prompt('Entrez le slug de la nouvelle page (ex: a-propos, prestations):')
-    if (!slug) return
-    
-    // Vérifier si le slug existe déjà
-    const { data } = await supabase
-      .from('pages')
-      .select('id')
-      .eq('slug', slug)
-      .single()
-    
-    if (data) {
-      alert('Ce slug existe déjà. Veuillez en choisir un autre.')
-      return
-    }
-    
-    // Créer la nouvelle page
-    const newPage = {
-      slug,
-      title: 'Nouvelle page',
-      content: {
-        html: '<div class="container mx-auto p-4"><h1 class="text-3xl font-bold mb-4">Titre de la page</h1><p class="mb-4">Contenu de la page à modifier...</p></div>',
-        updatedAt: new Date().toISOString()
-      }
-    }
-    
-    const { data: createdPage, error } = await supabase
-      .from('pages')
-      .insert([newPage])
-      .select()
-    
-    if (error) {
-      console.error('Erreur lors de la création de la page:', error)
-      alert('Erreur lors de la création de la page')
-      return
-    }
-    
-    loadPages()
-    if (createdPage && createdPage.length > 0) {
-      selectPage(createdPage[0])
-    }
-  }
-
   // Fonction pour lancer l'édition d'une page
   const startEditing = (page: PageData, mode: EditorType) => {
     setSelectedPage(page)
@@ -327,12 +283,6 @@ export default function DashboardPage() {
           <div className="lg:col-span-1 bg-gray-50 p-4 rounded-md">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-semibold">Pages du site</h2>
-              <button 
-                onClick={createNewPage}
-                className="bg-green-500 hover:bg-green-600 text-white p-1 rounded text-sm flex items-center"
-              >
-                <span className="px-1">+ Nouvelle</span>
-              </button>
             </div>
             <div className="space-y-1">
               <p className="text-sm text-gray-500 mb-2">Cliquez sur une page pour la modifier :</p>
@@ -380,7 +330,7 @@ export default function DashboardPage() {
                 ))}
                 {pages.length === 0 && (
                   <li className="text-gray-500 italic px-3 py-2">
-                    Aucune page trouvée. Créez votre première page.
+                    Aucune page trouvée.
                   </li>
                 )}
               </ul>
