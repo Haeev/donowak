@@ -1,0 +1,12 @@
+# *
+User-agent: *
+Allow: /
+Disallow: /admin-access-6742
+Disallow: /login
+Disallow: /dashboard
+
+# Host
+Host: https://donowak.fr
+
+# Sitemaps
+Sitemap: https://donowak.fr/sitemap.xml
