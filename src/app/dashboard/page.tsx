@@ -5,7 +5,7 @@ import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 
 // Liste des emails autorisés à accéder au dashboard
-const AUTHORIZED_EMAILS = ['votre-email@example.com'] // Remplacez par votre email d'administrateur
+const AUTHORIZED_EMAILS = ['loic.nowakowski@gmail.com'] // Email administrateur unique
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null)
