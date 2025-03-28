@@ -50,3 +50,24 @@
 - Commit et push des corrections sur GitHub (`git push origin main`).
 - Déploiement manuel réussi vers l'environnement de production (`vercel --prod`).
 - URL de production: https://donowak-e29em0xf8-nowakowskis-projects.vercel.app 
+
+### Configuration d'Authentification et Corrections Structurelles (28/03/2025)
+
+- Ajout de la fonctionnalité d'authentification avec Supabase pour protéger le tableau de bord administrateur.
+  - Création des routes `/login` et `/auth` pour la gestion de l'authentification.
+  - Mise en place du middleware pour vérifier l'authentification et protéger les routes `/dashboard/*`.
+  - Création des utilitaires Supabase dans `src/utils/supabase/` (client, server, middleware).
+- **Correction d'erreurs de structure du projet :**
+  - Déplacement des fichiers d'authentification placés par erreur dans `/donowak/src/` vers le bon répertoire `/donowak/donowak/src/`.
+  - Suppression des packages npm installés par erreur à la racine de l'espace de travail (`/donowak/`).
+  - Identification d'un fichier `.env.local` mal placé dans un sous-dossier imbriqué (`/donowak/donowak/donowak/`).
+- **Correction des erreurs de déploiement Vercel :**
+  - Résolution des erreurs ESLint qui bloquaient le déploiement :
+    - Échappement des apostrophes dans les chaînes JSX avec `&apos;`.
+    - Suppression de l'import inutilisé `NextResponse` dans `middleware.ts`.
+    - Utilisation de commentaires `// eslint-disable-next-line` pour les variables d'erreur intentionnellement non utilisées.
+  - Correction des erreurs de typage TypeScript en passant de versions Canary/expérimentales aux versions stables :
+    - Next.js : de la version 15.2.4 (Canary) à la version 14.2.0 (stable).
+    - React : de la version 19.0.0 (Canary) à la version 18.2.0 (stable).
+    - ESLint : de la version 9 (expérimentale) à la version 8.57.0 (stable).
+  - Suppression du flag `--turbopack` qui n'est pas compatible avec les versions stables. 
