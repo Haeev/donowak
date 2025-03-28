@@ -151,16 +151,18 @@ const ModularEditor = ({ pageData, onSave, onCancel }: ModularEditorProps) => {
               // Inclure Tailwind et nos styles de modules
               'https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css',
               { name: 'module-styles', content: moduleStylesCss }
-            ],
-          },
-          // Utiliser le système de grille
-          gridSystem: {
-            rows: 12,
-            columns: 12,
-            cellHeight: 80,
-            responsive: true
+            ]
           }
         })
+
+        // Configuration de la grille via JavaScript
+        // @ts-ignore
+        editor.Grid.setOptions({
+          cellHeight: 80,
+          columns: 12,
+          rows: 12,
+          responsive: true
+        });
 
         // Ajouter les blocs modulaires
         moduleBlocks.forEach(blockData => {
