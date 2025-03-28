@@ -5,11 +5,19 @@ import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 
-// Import dynamique de l'éditeur pour éviter les erreurs SSR
+// Import dynamique des composants d'édition pour éviter les erreurs SSR
 const RichTextEditor = dynamic(() => import('@/components/admin/RichTextEditor'), {
   ssr: false,
   loading: () => <div className="border rounded-md p-4 animate-pulse">Chargement de l'éditeur...</div>
 })
+
+const VisualPageEditor = dynamic(() => import('@/components/admin/VisualPageEditor'), {
+  ssr: false,
+  loading: () => <div className="border rounded-md p-4 animate-pulse">Chargement de l'éditeur visuel...</div>
+})
+
+// Style global pour Font Awesome
+import '@fortawesome/fontawesome-free/css/all.min.css'
 
 // Liste des emails autorisés à accéder au dashboard
 const AUTHORIZED_EMAILS = ['loic.nowakowski@gmail.com'] // Email administrateur unique
@@ -21,6 +29,9 @@ interface PageData {
   title: string
   content: any // Peut contenir du HTML et JSON
 }
+
+// Types d'éditeurs disponibles
+type EditorType = 'rich' | 'visual'
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null)
@@ -34,6 +45,8 @@ export default function DashboardPage() {
   const [saving, setSaving] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
   const [saveError, setSaveError] = useState(false)
+  const [editorMode, setEditorMode] = useState<EditorType>('visual') // Par défaut, utiliser l'éditeur visuel
+  const [isVisualEditing, setIsVisualEditing] = useState(false) // Mode édition visuelle en plein écran
   
   const supabase = createClient()
   const router = useRouter()
@@ -91,6 +104,7 @@ export default function DashboardPage() {
     setSelectedPage(page)
     setEditedTitle(page.title)
     setEditedContent(page.content?.html || '')
+    setIsVisualEditing(false) // Désactiver l'édition visuelle en plein écran
   }
 
   const savePage = async () => {
@@ -126,6 +140,40 @@ export default function DashboardPage() {
     loadPages() // Recharger les pages pour mettre à jour la liste
   }
 
+  // Nouvelle fonction pour sauvegarder depuis l'éditeur visuel
+  const saveVisualPage = async (id: string, title: string, htmlContent: string) => {
+    setSaving(true)
+    setSaveSuccess(false)
+    setSaveError(false)
+
+    // Préparer les données à sauvegarder
+    const pageData = {
+      title,
+      content: {
+        html: htmlContent,
+        updatedAt: new Date().toISOString()
+      }
+    }
+
+    const { error } = await supabase
+      .from('pages')
+      .update(pageData)
+      .eq('id', id)
+
+    setSaving(false)
+    
+    if (error) {
+      console.error('Erreur lors de la sauvegarde:', error)
+      setSaveError(true)
+      return false
+    }
+
+    setSaveSuccess(true)
+    await loadPages() // Recharger les pages pour mettre à jour la liste
+    setIsVisualEditing(false) // Sortir du mode édition visuelle
+    return true
+  }
+
   const createNewPage = async () => {
     // Demander le slug pour la nouvelle page
     const slug = prompt('Entrez le slug de la nouvelle page (ex: a-propos, prestations):')
@@ -148,7 +196,7 @@ export default function DashboardPage() {
       slug,
       title: 'Nouvelle page',
       content: {
-        html: '<p>Contenu de la page à modifier...</p>',
+        html: '<div class="container mx-auto p-4"><h1 class="text-3xl font-bold mb-4">Titre de la page</h1><p class="mb-4">Contenu de la page à modifier...</p></div>',
         updatedAt: new Date().toISOString()
       }
     }
@@ -168,6 +216,12 @@ export default function DashboardPage() {
     if (createdPage && createdPage.length > 0) {
       selectPage(createdPage[0])
     }
+  }
+
+  // Fonction pour lancer l'édition visuelle d'une page
+  const startVisualEditing = (page: PageData) => {
+    setSelectedPage(page)
+    setIsVisualEditing(true)
   }
 
   if (loading) {
@@ -191,6 +245,19 @@ export default function DashboardPage() {
             Retourner à l'accueil
           </button>
         </div>
+      </div>
+    )
+  }
+
+  // Si mode édition visuelle, afficher l'éditeur visuel en plein écran
+  if (isVisualEditing && selectedPage) {
+    return (
+      <div className="min-h-screen p-4">
+        <VisualPageEditor 
+          pageData={selectedPage}
+          onSave={saveVisualPage}
+          onCancel={() => setIsVisualEditing(false)}
+        />
       </div>
     )
   }
@@ -249,29 +316,89 @@ export default function DashboardPage() {
                 <span className="px-1">+ Nouvelle</span>
               </button>
             </div>
-            <ul className="space-y-2">
-              {pages.map(page => (
-                <li key={page.id}>
-                  <button
-                    onClick={() => selectPage(page)}
-                    className={`w-full text-left px-3 py-2 rounded ${selectedPage?.id === page.id ? 'bg-blue-100 font-medium' : 'hover:bg-gray-100'}`}
-                  >
-                    {page.title} <span className="text-gray-500 text-sm">({page.slug})</span>
-                  </button>
-                </li>
-              ))}
-              {pages.length === 0 && (
-                <li className="text-gray-500 italic px-3 py-2">
-                  Aucune page trouvée. Créez votre première page.
-                </li>
-              )}
-            </ul>
+            <div className="space-y-1">
+              <p className="text-sm text-gray-500 mb-2">Cliquez sur une page pour la modifier :</p>
+              <ul className="space-y-1 mb-4">
+                {pages.map(page => (
+                  <li key={page.id} className="border-b pb-2 mb-2 last:border-0">
+                    <div className={`text-left rounded ${selectedPage?.id === page.id ? 'font-medium text-blue-600' : ''}`}>
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <span className="block">{page.title}</span>
+                          <span className="text-gray-500 text-xs">/{page.slug}</span>
+                        </div>
+                        <div className="flex gap-1">
+                          {/* Bouton d'édition standard */}
+                          <button
+                            onClick={() => selectPage(page)}
+                            className="p-1 text-gray-500 hover:text-blue-600"
+                            title="Modifier avec l'éditeur standard"
+                          >
+                            <i className="fas fa-edit text-sm"></i>
+                          </button>
+                          
+                          {/* Bouton d'édition visuelle avancée */}
+                          <button
+                            onClick={() => startVisualEditing(page)}
+                            className="p-1 text-gray-500 hover:text-green-600"
+                            title="Modifier avec l'éditeur visuel (WordPress-like)"
+                          >
+                            <i className="fas fa-palette text-sm"></i>
+                          </button>
+                          
+                          {/* Bouton de prévisualisation */}
+                          <a
+                            href={`/${page.slug}`}
+                            target="_blank"
+                            className="p-1 text-gray-500 hover:text-purple-600"
+                            title="Voir la page sur le site"
+                          >
+                            <i className="fas fa-eye text-sm"></i>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+                {pages.length === 0 && (
+                  <li className="text-gray-500 italic px-3 py-2">
+                    Aucune page trouvée. Créez votre première page.
+                  </li>
+                )}
+              </ul>
+            </div>
           </div>
 
           {/* Éditeur à droite */}
           <div className="lg:col-span-3">
             {selectedPage ? (
               <div className="space-y-4">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex-grow">
+                    <h3 className="text-xl font-semibold">Édition de "{selectedPage.title}"</h3>
+                    <p className="text-sm text-gray-500">Modifiez le contenu de la page</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="mb-2 flex items-center justify-end space-x-2">
+                      <span className="text-sm text-gray-500 mr-2">Mode d'édition:</span>
+                      <button 
+                        onClick={() => setEditorMode('rich')}
+                        className={`px-2 py-1 text-sm rounded ${editorMode === 'rich' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100'}`}
+                        title="Éditeur de texte riche standard"
+                      >
+                        <i className="fas fa-paragraph mr-1"></i> Classique
+                      </button>
+                      <button 
+                        onClick={() => startVisualEditing(selectedPage)}
+                        className="px-2 py-1 text-sm rounded bg-green-100 text-green-700"
+                        title="Éditeur visuel interactif (WordPress-like)"
+                      >
+                        <i className="fas fa-palette mr-1"></i> Visuel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="flex items-center justify-between">
                   <div className="flex-grow">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -293,11 +420,13 @@ export default function DashboardPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Contenu de la page
                   </label>
-                  <RichTextEditor
-                    initialContent={editedContent}
-                    onChange={setEditedContent}
-                    height="400px"
-                  />
+                  {editorMode === 'rich' && (
+                    <RichTextEditor
+                      initialContent={editedContent}
+                      onChange={setEditedContent}
+                      height="400px"
+                    />
+                  )}
                 </div>
 
                 <div className="flex justify-end mt-4 space-x-3">
@@ -322,7 +451,11 @@ export default function DashboardPage() {
               </div>
             ) : (
               <div className="bg-gray-50 rounded-md p-8 text-center">
-                <p className="text-gray-600">Sélectionnez une page à modifier ou créez-en une nouvelle</p>
+                <p className="mb-4 text-gray-600">Sélectionnez une page à modifier ou créez-en une nouvelle</p>
+                <div className="bg-blue-50 p-4 rounded-md text-blue-800 text-sm">
+                  <h3 className="font-bold mb-2"><i className="fas fa-lightbulb text-yellow-500 mr-2"></i> Astuce</h3>
+                  <p>Vous pouvez maintenant modifier vos pages avec l'éditeur visuel avancé! Cliquez sur le bouton <i className="fas fa-palette text-green-600 mx-1"></i> à côté d'une page pour l'éditer visuellement, comme avec WordPress.</p>
+                </div>
               </div>
             )}
           </div>

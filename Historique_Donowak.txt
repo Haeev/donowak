@@ -96,4 +96,16 @@
   - Création d'un composant `PageContent` pour afficher dynamiquement le contenu des pages.
   - Modification des pages principales du site pour récupérer leur contenu depuis Supabase.
   - Ajout du plugin `@tailwindcss/typography` pour améliorer le rendu du contenu HTML généré.
-  - Mise en place d'un système de fallback pour assurer la disponibilité du contenu, même en cas d'erreur. 
+  - Mise en place d'un système de fallback pour assurer la disponibilité du contenu, même en cas d'erreur.
+
+### Amélioration de l'Interface d'Édition (28/03/2025)
+
+- **Implémentation d'un éditeur visuel avancé de type WordPress :**
+  - Intégration de GrapesJS, une bibliothèque de construction de pages visuelles "drag-and-drop"
+  - Mise en place d'un éditeur WYSIWYG avancé permettant la sélection directe des éléments à modifier
+  - Ajout d'une vue plein écran pour l'édition visuelle des pages
+  - Implémentation d'une interface inspirée de WordPress pour l'édition des pages
+  - Ajout d'icônes et de contrôles visuels (avec Font Awesome) pour améliorer l'expérience utilisateur
+  - Modernisation de la liste des pages avec des boutons d'action (édition standard, édition visuelle, prévisualisation)
+  - Possibilité de basculer entre éditeur texte riche classique et éditeur visuel avancé
+  - Création d'une expérience d'édition visuellement attrayante et intuitive 
