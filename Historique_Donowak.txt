@@ -81,4 +81,6 @@
   - Implémentation d'une liste d'emails autorisés pour restreindre l'accès au dashboard à l'administrateur uniquement.
   - Ajout d'une déconnexion automatique pour les utilisateurs non autorisés.
   - Activation de la redirection automatique des utilisateurs déjà connectés de `/login` vers `/dashboard`.
-  - Amélioration de l'expérience utilisateur avec des messages de chargement et des boutons de déconnexion. 
+  - Amélioration de l'expérience utilisateur avec des messages de chargement et des boutons de déconnexion.
+  - Suppression du lien vers le dashboard de la navigation principale pour cacher son existence.
+  - Création d'une route secrète (`/admin-access-6742`) pour accéder au dashboard via une URL connue uniquement par l'administrateur. 
