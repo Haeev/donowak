@@ -61,6 +61,7 @@
   - Déplacement des fichiers d'authentification placés par erreur dans `/donowak/src/` vers le bon répertoire `/donowak/donowak/src/`.
   - Suppression des packages npm installés par erreur à la racine de l'espace de travail (`/donowak/`).
   - Identification d'un fichier `.env.local` mal placé dans un sous-dossier imbriqué (`/donowak/donowak/donowak/`).
+  - Correction du fichier `next.config.ts` (non supporté) en le renommant en `next.config.js` (format supporté).
 - **Correction des erreurs de déploiement Vercel :**
   - Résolution des erreurs ESLint qui bloquaient le déploiement :
     - Échappement des apostrophes dans les chaînes JSX avec `&apos;`.
