@@ -16,6 +16,11 @@ const VisualPageEditor = dynamic(() => import('@/components/admin/VisualPageEdit
   loading: () => <div className="border rounded-md p-4 animate-pulse">Chargement de l'éditeur visuel...</div>
 })
 
+const ModularEditor = dynamic(() => import('@/components/admin/ModularEditor'), {
+  ssr: false,
+  loading: () => <div className="border rounded-md p-4 animate-pulse">Chargement de l'éditeur modulaire...</div>
+})
+
 // Style global pour Font Awesome
 import '@fortawesome/fontawesome-free/css/all.min.css'
 
@@ -31,7 +36,7 @@ interface PageData {
 }
 
 // Types d'éditeurs disponibles
-type EditorType = 'rich' | 'visual'
+type EditorType = 'rich' | 'visual' | 'modular'
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null)
@@ -45,8 +50,8 @@ export default function DashboardPage() {
   const [saving, setSaving] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
   const [saveError, setSaveError] = useState(false)
-  const [editorMode, setEditorMode] = useState<EditorType>('visual') // Par défaut, utiliser l'éditeur visuel
-  const [isVisualEditing, setIsVisualEditing] = useState(false) // Mode édition visuelle en plein écran
+  const [editorMode, setEditorMode] = useState<EditorType>('modular') // Par défaut, utiliser l'éditeur modulaire
+  const [isEditing, setIsEditing] = useState(false) // Mode édition en plein écran
   
   const supabase = createClient()
   const router = useRouter()
@@ -104,7 +109,7 @@ export default function DashboardPage() {
     setSelectedPage(page)
     setEditedTitle(page.title)
     setEditedContent(page.content?.html || '')
-    setIsVisualEditing(false) // Désactiver l'édition visuelle en plein écran
+    setIsEditing(false) // Désactiver l'édition en plein écran
   }
 
   const savePage = async () => {
@@ -140,7 +145,7 @@ export default function DashboardPage() {
     loadPages() // Recharger les pages pour mettre à jour la liste
   }
 
-  // Nouvelle fonction pour sauvegarder depuis l'éditeur visuel
+  // Fonction pour sauvegarder depuis les éditeurs visuels
   const saveVisualPage = async (id: string, title: string, htmlContent: string) => {
     setSaving(true)
     setSaveSuccess(false)
@@ -170,7 +175,7 @@ export default function DashboardPage() {
 
     setSaveSuccess(true)
     await loadPages() // Recharger les pages pour mettre à jour la liste
-    setIsVisualEditing(false) // Sortir du mode édition visuelle
+    setIsEditing(false) // Sortir du mode édition
     return true
   }
 
@@ -218,10 +223,11 @@ export default function DashboardPage() {
     }
   }
 
-  // Fonction pour lancer l'édition visuelle d'une page
-  const startVisualEditing = (page: PageData) => {
+  // Fonction pour lancer l'édition d'une page
+  const startEditing = (page: PageData, mode: EditorType) => {
     setSelectedPage(page)
-    setIsVisualEditing(true)
+    setEditorMode(mode)
+    setIsEditing(true)
   }
 
   if (loading) {
@@ -249,17 +255,29 @@ export default function DashboardPage() {
     )
   }
 
-  // Si mode édition visuelle, afficher l'éditeur visuel en plein écran
-  if (isVisualEditing && selectedPage) {
-    return (
-      <div className="min-h-screen p-4">
-        <VisualPageEditor 
-          pageData={selectedPage}
-          onSave={saveVisualPage}
-          onCancel={() => setIsVisualEditing(false)}
-        />
-      </div>
-    )
+  // Si mode édition, afficher l'éditeur en plein écran
+  if (isEditing && selectedPage) {
+    if (editorMode === 'visual') {
+      return (
+        <div className="min-h-screen p-4">
+          <VisualPageEditor 
+            pageData={selectedPage}
+            onSave={saveVisualPage}
+            onCancel={() => setIsEditing(false)}
+          />
+        </div>
+      )
+    } else if (editorMode === 'modular') {
+      return (
+        <div className="min-h-screen p-4">
+          <ModularEditor 
+            pageData={selectedPage}
+            onSave={saveVisualPage}
+            onCancel={() => setIsEditing(false)}
+          />
+        </div>
+      )
+    }
   }
 
   return (
@@ -332,18 +350,18 @@ export default function DashboardPage() {
                           <button
                             onClick={() => selectPage(page)}
                             className="p-1 text-gray-500 hover:text-blue-600"
-                            title="Modifier avec l'éditeur standard"
+                            title="Voir les options d'édition"
                           >
                             <i className="fas fa-edit text-sm"></i>
                           </button>
                           
-                          {/* Bouton d'édition visuelle avancée */}
+                          {/* Bouton d'édition modulaire */}
                           <button
-                            onClick={() => startVisualEditing(page)}
+                            onClick={() => startEditing(page, 'modular')}
                             className="p-1 text-gray-500 hover:text-green-600"
-                            title="Modifier avec l'éditeur visuel (WordPress-like)"
+                            title="Éditer avec l'éditeur modulaire"
                           >
-                            <i className="fas fa-palette text-sm"></i>
+                            <i className="fas fa-th-large text-sm"></i>
                           </button>
                           
                           {/* Bouton de prévisualisation */}
@@ -369,92 +387,152 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Éditeur à droite */}
+          {/* Options d'édition à droite */}
           <div className="lg:col-span-3">
             {selectedPage ? (
               <div className="space-y-4">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex-grow">
                     <h3 className="text-xl font-semibold">Édition de "{selectedPage.title}"</h3>
-                    <p className="text-sm text-gray-500">Modifiez le contenu de la page</p>
+                    <p className="text-sm text-gray-500">Choisissez comment modifier cette page</p>
                   </div>
-                  <div className="text-right">
-                    <div className="mb-2 flex items-center justify-end space-x-2">
-                      <span className="text-sm text-gray-500 mr-2">Mode d'édition:</span>
-                      <button 
-                        onClick={() => setEditorMode('rich')}
-                        className={`px-2 py-1 text-sm rounded ${editorMode === 'rich' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100'}`}
-                        title="Éditeur de texte riche standard"
+                </div>
+
+                <div className="bg-white rounded-lg shadow-lg p-8">
+                  <h4 className="text-lg font-semibold mb-6">Choisissez un mode d'édition :</h4>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* Option d'édition modulaire */}
+                    <div 
+                      className="border rounded-lg p-6 hover:shadow-md cursor-pointer transition-shadow bg-blue-50"
+                      onClick={() => startEditing(selectedPage, 'modular')}
+                    >
+                      <div className="text-center mb-4">
+                        <i className="fas fa-th-large text-4xl text-blue-600"></i>
+                      </div>
+                      <h5 className="font-medium text-center mb-2">Éditeur Modulaire</h5>
+                      <p className="text-sm text-gray-600 text-center">
+                        Utilisez des blocs prédéfinis pour construire votre page visuellement.
+                      </p>
+                      <div className="mt-4 text-center">
+                        <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                          Commencer
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {/* Option d'édition visuelle avancée */}
+                    <div 
+                      className="border rounded-lg p-6 hover:shadow-md cursor-pointer transition-shadow"
+                      onClick={() => startEditing(selectedPage, 'visual')}
+                    >
+                      <div className="text-center mb-4">
+                        <i className="fas fa-palette text-4xl text-green-600"></i>
+                      </div>
+                      <h5 className="font-medium text-center mb-2">Éditeur Visuel</h5>
+                      <p className="text-sm text-gray-600 text-center">
+                        Éditeur type WordPress avec personnalisation libre.
+                      </p>
+                      <div className="mt-4 text-center">
+                        <button className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+                          Commencer
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {/* Option d'édition texte riche */}
+                    <div 
+                      className="border rounded-lg p-6 hover:shadow-md cursor-pointer transition-shadow"
+                      onClick={() => {
+                        setEditorMode('rich')
+                        selectPage(selectedPage)
+                      }}
+                    >
+                      <div className="text-center mb-4">
+                        <i className="fas fa-paragraph text-4xl text-gray-600"></i>
+                      </div>
+                      <h5 className="font-medium text-center mb-2">Éditeur Basique</h5>
+                      <p className="text-sm text-gray-600 text-center">
+                        Éditeur de texte riche basique pour des modifications simples.
+                      </p>
+                      <div className="mt-4 text-center">
+                        <button className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700">
+                          Commencer
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Instructions et conseils */}
+                  <div className="mt-8 bg-gray-50 p-4 rounded-md">
+                    <h5 className="font-medium mb-2 flex items-center">
+                      <i className="fas fa-lightbulb text-yellow-500 mr-2"></i> Conseils
+                    </h5>
+                    <ul className="text-sm text-gray-600 space-y-2 list-disc pl-5">
+                      <li>L'<strong>éditeur modulaire</strong> est recommandé pour la plupart des cas d'utilisation.</li>
+                      <li>Utilisez l'<strong>éditeur visuel</strong> uniquement si vous avez besoin de personnalisations avancées.</li>
+                      <li>L'<strong>éditeur basique</strong> est utile pour de simples corrections de texte.</li>
+                      <li>Prévisualisez toujours vos modifications avant de publier.</li>
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Éditeur de texte riche si sélectionné */}
+                {editorMode === 'rich' && (
+                  <div className="bg-white rounded-lg shadow-lg p-8 mt-6">
+                    <h4 className="text-lg font-semibold mb-4">Édition de texte</h4>
+                    
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Titre de la page
+                      </label>
+                      <input
+                        type="text"
+                        value={editedTitle}
+                        onChange={(e) => setEditedTitle(e.target.value)}
+                        className="w-full border-gray-300 rounded-md shadow-sm p-2"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Contenu de la page
+                      </label>
+                      <RichTextEditor
+                        initialContent={editedContent}
+                        onChange={setEditedContent}
+                        height="400px"
+                      />
+                    </div>
+
+                    <div className="flex justify-end mt-4 space-x-3">
+                      {saveSuccess && (
+                        <span className="text-green-600 flex items-center px-3">
+                          ✓ Sauvegardé avec succès!
+                        </span>
+                      )}
+                      {saveError && (
+                        <span className="text-red-600 flex items-center px-3">
+                          Erreur lors de la sauvegarde
+                        </span>
+                      )}
+                      <button
+                        onClick={savePage}
+                        disabled={saving}
+                        className={`bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center ${saving ? 'opacity-70 cursor-not-allowed' : ''}`}
                       >
-                        <i className="fas fa-paragraph mr-1"></i> Classique
-                      </button>
-                      <button 
-                        onClick={() => startVisualEditing(selectedPage)}
-                        className="px-2 py-1 text-sm rounded bg-green-100 text-green-700"
-                        title="Éditeur visuel interactif (WordPress-like)"
-                      >
-                        <i className="fas fa-palette mr-1"></i> Visuel
+                        {saving ? 'Sauvegarde...' : 'Sauvegarder les modifications'}
                       </button>
                     </div>
                   </div>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex-grow">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Titre de la page
-                    </label>
-                    <input
-                      type="text"
-                      value={editedTitle}
-                      onChange={(e) => setEditedTitle(e.target.value)}
-                      className="w-full border-gray-300 rounded-md shadow-sm p-2"
-                    />
-                  </div>
-                  <div className="ml-4 text-sm text-gray-500 flex items-center">
-                    Slug: <span className="font-mono ml-1">{selectedPage.slug}</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Contenu de la page
-                  </label>
-                  {editorMode === 'rich' && (
-                    <RichTextEditor
-                      initialContent={editedContent}
-                      onChange={setEditedContent}
-                      height="400px"
-                    />
-                  )}
-                </div>
-
-                <div className="flex justify-end mt-4 space-x-3">
-                  {saveSuccess && (
-                    <span className="text-green-600 flex items-center px-3">
-                      ✓ Sauvegardé avec succès!
-                    </span>
-                  )}
-                  {saveError && (
-                    <span className="text-red-600 flex items-center px-3">
-                      Erreur lors de la sauvegarde
-                    </span>
-                  )}
-                  <button
-                    onClick={savePage}
-                    disabled={saving}
-                    className={`bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center ${saving ? 'opacity-70 cursor-not-allowed' : ''}`}
-                  >
-                    {saving ? 'Sauvegarde...' : 'Sauvegarder les modifications'}
-                  </button>
-                </div>
+                )}
               </div>
             ) : (
               <div className="bg-gray-50 rounded-md p-8 text-center">
                 <p className="mb-4 text-gray-600">Sélectionnez une page à modifier ou créez-en une nouvelle</p>
                 <div className="bg-blue-50 p-4 rounded-md text-blue-800 text-sm">
                   <h3 className="font-bold mb-2"><i className="fas fa-lightbulb text-yellow-500 mr-2"></i> Astuce</h3>
-                  <p>Vous pouvez maintenant modifier vos pages avec l'éditeur visuel avancé! Cliquez sur le bouton <i className="fas fa-palette text-green-600 mx-1"></i> à côté d'une page pour l'éditer visuellement, comme avec WordPress.</p>
+                  <p>Vous pouvez maintenant modifier vos pages avec l'éditeur modulaire qui vous permet d'ajouter facilement des blocs de contenu prédéfinis tout en maintenant une cohérence visuelle !</p>
                 </div>
               </div>
             )}

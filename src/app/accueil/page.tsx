@@ -1,4 +1,8 @@
 import PageContent from '@/components/PageContent'
+import Hero from '@/components/Hero'
+import FeatureSection from '@/components/FeatureSection'
+import TestimonialsSection from '@/components/TestimonialsSection'
+import CTASection from '@/components/CTASection'
 
 export default function AccueilPage() {
   // Ce contenu de secours s'affichera uniquement si la page n'est pas trouvée dans Supabase
@@ -23,8 +27,22 @@ export default function AccueilPage() {
 
   return (
     <div className="min-h-screen">
-      {/* Charge le contenu dynamique de la page "accueil" depuis Supabase */}
-      <PageContent slug="accueil" fallbackContent={fallbackContent} />
+      {/* Section héro */}
+      <Hero />
+      
+      {/* Section des fonctionnalités */}
+      <FeatureSection />
+      
+      {/* Contenu dynamique chargé depuis Supabase */}
+      <div className="container mx-auto px-4 py-16">
+        <PageContent slug="accueil" fallbackContent={<></>} />
+      </div>
+      
+      {/* Section témoignages */}
+      <TestimonialsSection />
+      
+      {/* Section CTA */}
+      <CTASection />
     </div>
   )
 } 

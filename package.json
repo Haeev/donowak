@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "deploy": "next build && next-sitemap && vercel --prod",
+    "init-pages": "node scripts/init-pages.js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.7.2",
@@ -22,6 +24,7 @@
     "@tiptap/pm": "^2.11.6",
     "@tiptap/react": "^2.11.6",
     "@tiptap/starter-kit": "^2.11.6",
+    "dotenv": "^16.4.7",
     "grapesjs": "^0.22.6",
     "grapesjs-preset-webpage": "^1.0.3",
     "next": "^14.2.0",
@@ -37,6 +40,7 @@
     "@types/react-dom": "^18",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.0",
+    "next-sitemap": "^4.2.3",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
