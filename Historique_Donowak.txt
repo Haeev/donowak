@@ -35,3 +35,18 @@
 - Création du dépôt distant public `Haeev/donowak` via CLI (`gh repo create`).
 - Liaison du projet local au dépôt distant (`git remote add origin`).
 - Envoi initial du code local vers le dépôt distant (`git push -u origin main`). 
+
+### Déploiement Vercel (Date et Heure)
+
+- Connexion au compte Vercel via CLI (`vercel login`) avec authentification GitHub.
+- Liaison du projet local au compte Vercel (`vercel` puis `vercel link` pour confirmer).
+  - Création du projet Vercel `donowak` sous le scope `Nowakowski's projects`.
+- Ajout des variables d'environnement Supabase (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`) via CLI (`vercel env add ...`) pour l'environnement de Production.
+- Pull des variables d'environnement pour le développement local (`vercel env pull .env.development.local`).
+- **Diagnostic et correction des erreurs de build Vercel (`npm run build`):**
+  - Correction des erreurs ESLint `react/no-unescaped-entities` (apostrophes) dans plusieurs fichiers `page.tsx`.
+  - Correction de l'erreur de pré-rendu sur `/contact` en ajoutant la directive `'use client';` (gestion `onSubmit`).
+  - Correction de l'erreur `Cannot find module '@supabase/supabase-js'` en installant le package comme dépendance de production (`npm install @supabase/supabase-js`).
+- Commit et push des corrections sur GitHub (`git push origin main`).
+- Déploiement manuel réussi vers l'environnement de production (`vercel --prod`).
+- URL de production: https://donowak-e29em0xf8-nowakowskis-projects.vercel.app 
