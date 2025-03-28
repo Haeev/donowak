@@ -83,4 +83,17 @@
   - Activation de la redirection automatique des utilisateurs déjà connectés de `/login` vers `/dashboard`.
   - Amélioration de l'expérience utilisateur avec des messages de chargement et des boutons de déconnexion.
   - Suppression du lien vers le dashboard de la navigation principale pour cacher son existence.
-  - Création d'une route secrète (`/admin-access-6742`) pour accéder au dashboard via une URL connue uniquement par l'administrateur. 
+  - Création d'une route secrète (`/admin-access-6742`) pour accéder au dashboard via une URL connue uniquement par l'administrateur.
+
+### Implémentation du CMS avec Éditeur WYSIWYG (28/03/2025)
+
+- **Transformation du dashboard en système de gestion de contenu (CMS) :**
+  - Installation de TipTap et ses extensions (`@tiptap/react`, `@tiptap/starter-kit`, etc.) pour créer un éditeur WYSIWYG.
+  - Création d'un composant d'éditeur riche personnalisé avec barre d'outils complète (formatage, liens, images).
+  - Structuration du dashboard en onglets (Pages, Blog, Contacts) avec système de navigation.
+  - Implémentation de la gestion des pages avec interface d'édition interactive.
+  - Développement de fonctionnalités CRUD (Création, Lecture, Mise à jour, Suppression) pour les pages.
+  - Création d'un composant `PageContent` pour afficher dynamiquement le contenu des pages.
+  - Modification des pages principales du site pour récupérer leur contenu depuis Supabase.
+  - Ajout du plugin `@tailwindcss/typography` pour améliorer le rendu du contenu HTML généré.
+  - Mise en place d'un système de fallback pour assurer la disponibilité du contenu, même en cas d'erreur. 
