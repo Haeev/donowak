@@ -2,17 +2,22 @@
 require('dotenv').config({ path: '.env.local' })
 const { createClient } = require('@supabase/supabase-js')
 
-// Initialiser le client Supabase
+// Initialiser le client Supabase avec la clé de service pour contourner les politiques RLS
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-if (!supabaseUrl || !supabaseKey) {
+if (!supabaseUrl || !supabaseServiceKey) {
   console.error("❌ Les variables d'environnement Supabase ne sont pas définies.")
-  console.log("Assurez-vous d'avoir un fichier .env.local avec NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_ANON_KEY.")
+  console.log("Assurez-vous d'avoir un fichier .env.local avec NEXT_PUBLIC_SUPABASE_URL et SUPABASE_SERVICE_ROLE_KEY.")
   process.exit(1)
 }
 
-const supabase = createClient(supabaseUrl, supabaseKey)
+const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false
+  }
+})
 
 // Liste des pages à créer avec leur contenu par défaut
 const defaultPages = [
