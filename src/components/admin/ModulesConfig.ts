@@ -10,17 +10,18 @@ export const modulesList: ModuleType[] = [
   {
     type: 'text',
     name: 'Texte',
-    description: 'Paragraphes, titres et texte enrichi',
+    description: 'Paragraphes, titres et listes',
     icon: 'fa-paragraph',
     defaultContent: `
-      <h2>Titre de section</h2>
-      <p>Votre contenu ici. Cliquez pour modifier ce texte.</p>
+      <h2 class="text-2xl font-bold mb-4">Titre de section</h2>
+      <p class="mb-4">Votre contenu ici. Cliquez pour modifier ce texte.</p>
+      <p>Ajoutez autant de paragraphes que nécessaire.</p>
     `
   },
   {
     type: 'image',
     name: 'Image',
-    description: 'Image unique avec légende optionnelle',
+    description: 'Image unique avec légende',
     icon: 'fa-image',
     defaultContent: 'https://via.placeholder.com/800x400?text=Votre+Image+Ici'
   },
@@ -53,10 +54,10 @@ export const modulesList: ModuleType[] = [
     description: 'Bouton ou bannière CTA',
     icon: 'fa-bullhorn',
     defaultContent: `
-      <div class="bg-blue-600 text-white rounded-lg p-8 text-center">
+      <div class="bg-indigo-600 text-white rounded-lg p-8 text-center">
         <h3 class="text-2xl font-bold mb-4">Prêt à passer à l'action?</h3>
         <p class="mb-6">Contactez-nous dès aujourd'hui pour une consultation gratuite</p>
-        <a href="/contact" class="inline-block bg-white text-blue-600 font-bold py-3 px-6 rounded-lg hover:bg-blue-50 transition-colors">Nous contacter</a>
+        <a href="/contact" class="inline-block bg-white text-indigo-600 font-bold py-3 px-6 rounded-lg hover:bg-indigo-50 transition-colors">Nous contacter</a>
       </div>
     `
   },
@@ -86,17 +87,17 @@ export const modulesList: ModuleType[] = [
     defaultContent: `
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="p-4 bg-white rounded-lg shadow-sm">
-          <div class="text-blue-600 mb-3"><i class="fas fa-check-circle text-2xl"></i></div>
+          <div class="text-indigo-600 mb-3"><i class="fas fa-check-circle text-2xl"></i></div>
           <h3 class="font-bold mb-2">Fonctionnalité 1</h3>
           <p class="text-gray-600">Description de la fonctionnalité ou du service proposé.</p>
         </div>
         <div class="p-4 bg-white rounded-lg shadow-sm">
-          <div class="text-blue-600 mb-3"><i class="fas fa-check-circle text-2xl"></i></div>
+          <div class="text-indigo-600 mb-3"><i class="fas fa-check-circle text-2xl"></i></div>
           <h3 class="font-bold mb-2">Fonctionnalité 2</h3>
           <p class="text-gray-600">Description de la fonctionnalité ou du service proposé.</p>
         </div>
         <div class="p-4 bg-white rounded-lg shadow-sm">
-          <div class="text-blue-600 mb-3"><i class="fas fa-check-circle text-2xl"></i></div>
+          <div class="text-indigo-600 mb-3"><i class="fas fa-check-circle text-2xl"></i></div>
           <h3 class="font-bold mb-2">Fonctionnalité 3</h3>
           <p class="text-gray-600">Description de la fonctionnalité ou du service proposé.</p>
         </div>
@@ -106,24 +107,24 @@ export const modulesList: ModuleType[] = [
   {
     type: 'stats',
     name: 'Statistiques',
-    description: 'Chiffres et statistiques importantes',
+    description: 'Chiffres clés à mettre en avant',
     icon: 'fa-chart-simple',
     defaultContent: `
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
         <div class="p-4">
-          <p class="text-4xl font-bold text-blue-600">250+</p>
+          <p class="text-4xl font-bold text-indigo-600">250+</p>
           <p class="text-gray-600">Projets Réalisés</p>
         </div>
         <div class="p-4">
-          <p class="text-4xl font-bold text-blue-600">15</p>
+          <p class="text-4xl font-bold text-indigo-600">15</p>
           <p class="text-gray-600">Années d'Expérience</p>
         </div>
         <div class="p-4">
-          <p class="text-4xl font-bold text-blue-600">95%</p>
+          <p class="text-4xl font-bold text-indigo-600">95%</p>
           <p class="text-gray-600">Clients Satisfaits</p>
         </div>
         <div class="p-4">
-          <p class="text-4xl font-bold text-blue-600">24/7</p>
+          <p class="text-4xl font-bold text-indigo-600">24/7</p>
           <p class="text-gray-600">Support Client</p>
         </div>
       </div>
@@ -132,7 +133,7 @@ export const modulesList: ModuleType[] = [
   {
     type: 'team',
     name: 'Équipe',
-    description: 'Présentation des membres de l\'équipe',
+    description: 'Présentation des membres',
     icon: 'fa-users',
     defaultContent: `
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -165,15 +166,15 @@ export const modulesList: ModuleType[] = [
           <h3 class="text-xl font-bold mb-4">Contactez-nous</h3>
           <ul class="space-y-3">
             <li class="flex items-start">
-              <i class="fas fa-envelope text-blue-600 mt-1 mr-3"></i>
+              <i class="fas fa-envelope text-indigo-600 mt-1 mr-3"></i>
               <span>contact@donowak.com</span>
             </li>
             <li class="flex items-start">
-              <i class="fas fa-phone text-blue-600 mt-1 mr-3"></i>
+              <i class="fas fa-phone text-indigo-600 mt-1 mr-3"></i>
               <span>+33 (0)1 23 45 67 89</span>
             </li>
             <li class="flex items-start">
-              <i class="fas fa-map-marker-alt text-blue-600 mt-1 mr-3"></i>
+              <i class="fas fa-map-marker-alt text-indigo-600 mt-1 mr-3"></i>
               <span>123 Rue de l'Exemple, 75000 Paris, France</span>
             </li>
           </ul>
